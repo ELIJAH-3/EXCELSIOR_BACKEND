@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mysql = require('mysql2');
+const log = require('./logger.js');
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -27,7 +28,7 @@ connection.connect((err) => {
     console.error('Error connecting to the database:', err);
     return;
   }
-  console.log('Connected to the MySQL database');
+  log.debug('Connected to the MySQL database');
 });
 
 
@@ -40,5 +41,5 @@ app.get('/', (req, res) => {
 
 // Start server
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+    log.debug(`Server running on http://localhost:${port}`);
 });
