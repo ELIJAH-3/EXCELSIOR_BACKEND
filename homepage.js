@@ -11,6 +11,7 @@ router.get('/test', (req, res) => {
 router.post("/handlePlaylistInput", (req, res) => {
     try {
         const playlistID = req.body.playlistID;
+        const userID = req.body.userID;
         log.debug(`homepage.js playlistID from GUI: ${playlistID}`);
         const urlFormed = youTubeUtil.getURLofVideoCollectorUsingPlaylistId(playlistID, 20, "");
         log.debug(`homepage.js urlFormed: ${urlFormed}`);

@@ -1,5 +1,5 @@
 const log = require('./logger.js'); // using Winston logger for timestamp
-const mysql = require("mysql");
+const mysql = require('mysql2');
 const {createDatabaseQuery,createTableQuery, insertDummyStudentQuery }= require('./sqlQueries')
 let db;
 let retryCount = 0;
@@ -7,6 +7,13 @@ const maxRetries = 5; // Set the maximum number of retries
 // const createTableQuery = `CREATE TABLE student ( ID INT AUTO_INCREMENT PRIMARY KEY, NAME VARCHAR(100) NOT NULL, EMAIL VARCHAR(100) UNIQUE NOT NULL );`;
 // const insertDummyStudentQuery = `INSERT INTO student (NAME, EMAIL) VALUES ('Harry', 'Harry@mail.com'), ('Potter', 'Potter@mail.com');`;
 
+const connection = mysql.createConnection({
+  host:     process.env.DB_HOST,            // Your Google Cloud SQL host
+  user:     process.env.DB_USER,            // Your MySQL username
+  password: process.env.DB_PASSWORD,        // Your MySQL password
+  database: process.env.DB_NAME,            // Your database name
+  port:     process.env.DB_PORT || 3306,    // Default backend port
+});
 
 function connectToDatabase() {
     db = mysql.createConnection({
@@ -159,6 +166,7 @@ function executeSqlQueryWithValues(queryString, values) {
     });
 }
 module.exports = {
+    connection,
     connectToDatabase,
     executeSqlQuery,
     executeSqlQueryWithValues,
