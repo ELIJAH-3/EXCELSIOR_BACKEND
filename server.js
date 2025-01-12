@@ -13,7 +13,7 @@ app.use(cors()); // Enable CORS for frontend communication
 app.use(express.json()); // Parse JSON bodies
 
 app.use('/api', require('./TestFromFrontend'));
-
+app.use('/homepage', require('./homepage'));
 
 const connection = mysql.createConnection({
   host:     process.env.DB_HOST,            // Your Google Cloud SQL host
@@ -30,9 +30,6 @@ connection.connect((err) => {
   }
   log.debug('Connected to the MySQL database');
 });
-
-
-
 
 // Basic route
 app.get('/', (req, res) => {
