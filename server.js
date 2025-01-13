@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const log = require('./logger.js');
+const database = require('./database')
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -14,10 +15,9 @@ app.use(express.json()); // Parse JSON bodies
 app.use('/api', require('./TestFromFrontend'));
 app.use('/homepage', require('./homepage'));
 
-const database = require('./database')
-database.connection.connect((err) => {
+database.connectToDatabase((err) => {
   if (err) {
-    console.error('Error connecting to the database:', err);
+    log.error('Error connecting to the database:', err);
     return;
   }
   log.debug('Connected to the MySQL database');

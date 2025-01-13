@@ -1,32 +1,26 @@
+const dotenv = require('dotenv');
 const log = require('./logger.js'); // using Winston logger for timestamp
 const mysql = require('mysql2');
-const {createDatabaseQuery,createTableQuery, insertDummyStudentQuery }= require('./sqlQueries')
+const { createDatabaseQuery, createTableQuery, insertDummyStudentQuery } = require('./sqlQueries')
 let db;
 let retryCount = 0;
 const maxRetries = 5; // Set the maximum number of retries
-// const createTableQuery = `CREATE TABLE student ( ID INT AUTO_INCREMENT PRIMARY KEY, NAME VARCHAR(100) NOT NULL, EMAIL VARCHAR(100) UNIQUE NOT NULL );`;
-// const insertDummyStudentQuery = `INSERT INTO student (NAME, EMAIL) VALUES ('Harry', 'Harry@mail.com'), ('Potter', 'Potter@mail.com');`;
 
-const connection = mysql.createConnection({
-  host:     process.env.DB_HOST,            // Your Google Cloud SQL host
-  user:     process.env.DB_USER,            // Your MySQL username
-  password: process.env.DB_PASSWORD,        // Your MySQL password
-  database: process.env.DB_NAME,            // Your database name
-  port:     process.env.DB_PORT || 3306,    // Default backend port
-});
+dotenv.config();
 
 function connectToDatabase() {
     db = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "",
-        database: "crud01",
+        host: process.env.DB_HOST,            // Your Google Cloud SQL host
+        user: process.env.DB_USER,            // Your MySQL username
+        password: process.env.DB_PASSWORD,        // Your MySQL password
+        database: process.env.DB_NAME,            // Your database name
+        port: process.env.DB_PORT || 3306,    // Default backend port
     });
 
     db.connect(err => {
         if (err) {
             log.error(`DataBase.js Error connecting to DATABASE. ERROR= ${err}`);
-            if (err.code === 'ER_BAD_DB_ERROR'){
+            if (err.code === 'ER_BAD_DB_ERROR') {
                 log.debug("Specified Database does not exit. Attempting to create dataBase");
                 CreateDatabaseUsingTempDataBase()
                     .then(data => {
@@ -96,8 +90,7 @@ function CreateDatabaseUsingTempDataBase() {
         });
     });
 }
-function CreateTableAndInsertDummy()
-{
+function CreateTableAndInsertDummy() {
     log.debug("DataBase.js CreateTableAndInsertDummy() Called.")
     return new Promise((resolve, reject) => {
         db.query(createTableQuery, (err, data) => {
@@ -130,19 +123,18 @@ function executeSqlQuery(queryString) {
         db.query(queryString, (err, data) => {
             if (err) {
                 log.error("DataBase.js executeSqlQuery() error during sql execution. ERROR=" + err.message)
-                if(err.code === "ER_NO_SUCH_TABLE")
-                {
+                if (err.code === "ER_NO_SUCH_TABLE") {
                     //TODO: Check if table name is STUDENT
                     CreateTableAndInsertDummy()
-                        .then(data=> {
-                            return  executeSqlQuery(queryString).then(resolve).catch(reject);
+                        .then(data => {
+                            return executeSqlQuery(queryString).then(resolve).catch(reject);
                         })
                         .catch(err => {
-                            log.error("Could not create Table :( "+ err)
-                            return reject (err);
+                            log.error("Could not create Table :( " + err)
+                            return reject(err);
                         })
                 }
-                
+
                 return reject(err);
             }
             log.debug(`DataBase.js executeSqlQuery()-RESULT: ${JSON.stringify(data, null, 2)}`);
@@ -153,11 +145,11 @@ function executeSqlQuery(queryString) {
 
 //used for INSERT/UPDATE
 function executeSqlQueryWithValues(queryString, values) {
-    log.debug("DataBase.js executeSqlQueryWithValues()-query: " + queryString)
+    log.debug(`DataBase.js executeSqlQueryWithValues()-query: ${queryString} & values:${values}`);
     return new Promise((resolve, reject) => {
-        db.query(queryString,values, (err, data) => {
+        db.query(queryString, values, (err, data) => {
             if (err) {
-                log.error("DataBase.js executeSqlQuery() error during sql execution. ERROR=" + err.message)
+                log.error("DataBase.js executeSqlQueryWithValues() error during sql execution. ERROR=" + err.message)
                 return reject(err);
             }
             log.debug(`DataBase.js executeSqlQueryWithValues()-RESULT: ${JSON.stringify(data, null, 2)}`);
@@ -166,7 +158,6 @@ function executeSqlQueryWithValues(queryString, values) {
     });
 }
 module.exports = {
-    connection,
     connectToDatabase,
     executeSqlQuery,
     executeSqlQueryWithValues,
