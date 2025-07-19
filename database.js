@@ -46,14 +46,14 @@ function connectToDatabase() {
     });
 
     db.on('error', err => {
-        log.error(`DATABASE error:`, err);
+        log.error(`DATABASE error on db.on():`, JSON.stringify(err, null, 2));
         if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
             log.error(`DataBase.js Connection Lost with SQL SERVER. ERROR CODE=`, err.code);
             log.debug(`Attempting to reconnect to DATABASE server...`);
             connectToDatabase();
         } else {
             log.error(`DataBase.js UNKNOWN ERROR`);
-            throw err;
+            // throw err;
         }
     });
 };
