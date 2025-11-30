@@ -10,8 +10,8 @@ dotenv.config();
 
 function connectToDatabase() {
     db = mysql.createConnection({
-        host: process.env.DB_HOST,            // Your Google Cloud SQL host
-        user: process.env.DB_USER,            // Your MySQL username
+        host: process.env.DB_HOST||'127.0.0.1',            // Your Google Cloud SQL host
+        user: process.env.DB_USER|| 'root',            // Your MySQL username
         password: process.env.DB_PASSWORD,        // Your MySQL password
         database: process.env.DB_NAME,            // Your database name
         port: process.env.DB_PORT || 3306,    // Default backend port
