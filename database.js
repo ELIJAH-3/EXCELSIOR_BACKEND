@@ -24,11 +24,11 @@ function connectToDatabase() {
                 log.debug("Specified Database does not exit. Attempting to create dataBase");
                 CreateDatabaseUsingTempDataBase()
                     .then(data => {
-                        log.info("DataBase.js connectToDatabase: Database created.")
+                        log.info("DataBase.js connectToDatabase: Database created.Data = ",data)
                     })
                     .catch(err => {
                         log.error("DataBase.js connectToDatabase: Could not create Database. ERROR - " + err)
-                        return reject(err);
+                        // return reject(err);
                     })
             }
             retryCount++;
@@ -56,7 +56,7 @@ function connectToDatabase() {
             // throw err;
         }
     });
-};
+}
 function CreateDatabaseUsingTempDataBase() {
     log.debug("DataBase.js CreateDatabaseUsingTempDataBase().")
     return new Promise((resolve, reject) => {
@@ -127,6 +127,7 @@ function executeSqlQuery(queryString) {
                     //TODO: Check if table name is STUDENT
                     CreateTableAndInsertDummy()
                         .then(data => {
+                            log.debug("data: " + data);
                             return executeSqlQuery(queryString).then(resolve).catch(reject);
                         })
                         .catch(err => {
